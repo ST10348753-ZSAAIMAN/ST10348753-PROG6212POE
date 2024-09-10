@@ -67,6 +67,12 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        public IActionResult ClaimStatus()
+        {
+            // This displays the current status of the claim
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
