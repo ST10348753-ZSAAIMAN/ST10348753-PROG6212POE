@@ -52,6 +52,21 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        // Add Document Upload methods here
+        public IActionResult UploadDocument()
+        {
+            // This displays the document upload form
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult UploadDocument()
+        {
+            // Simulate the upload process
+            ViewBag.Message = "Document uploaded successfully.";
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
