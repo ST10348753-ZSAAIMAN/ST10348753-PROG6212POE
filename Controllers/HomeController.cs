@@ -59,8 +59,9 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        // Document Upload POST method (Renamed to UploadDocumentPost)
         [HttpPost]
-        public IActionResult UploadDocument()
+        public IActionResult UploadDocumentPost()
         {
             // Simulate the upload process
             ViewBag.Message = "Document uploaded successfully.";
