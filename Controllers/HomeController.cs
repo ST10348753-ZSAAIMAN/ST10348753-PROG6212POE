@@ -37,6 +37,20 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        // Add Claim Approval methods here
+        public IActionResult ApproveClaim()
+        {
+            // This displays the form where Programme Coordinators approve claims
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ApproveClaim(string action)
+        {
+            // Simulate an approval/rejection process
+            ViewBag.Message = action == "Approve" ? "Claim approved." : "Claim rejected.";
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
