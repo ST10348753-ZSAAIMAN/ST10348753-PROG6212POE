@@ -27,8 +27,8 @@ namespace ST10348753_PROG6212POE
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+             name: "default",
+             pattern: "{controller=Home}/{action=HomePage}/{id?}");
 
             app.Run();
         }

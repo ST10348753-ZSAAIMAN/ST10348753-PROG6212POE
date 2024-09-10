@@ -37,6 +37,12 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        // This is the HomePage action, which will render the custom home page
+        public IActionResult HomePage()
+        {
+            return View();
+        }
+
         // Add Claim Approval methods here
         public IActionResult ApproveClaim()
         {
