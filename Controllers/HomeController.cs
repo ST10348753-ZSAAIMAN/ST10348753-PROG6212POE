@@ -1,3 +1,17 @@
+// Zinedean Saaiman
+// ST10348753
+// Group: 2
+
+// References: 
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/overview?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-6.0
+// https://getbootstrap.com/docs/5.1/getting-started/introduction/
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/views/working-with-forms?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/dotnet/standard/class-libraries
+// https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/
+
 using Microsoft.AspNetCore.Mvc;
 using ST10348753_PROG6212POE.Models;
 using System.Diagnostics;
