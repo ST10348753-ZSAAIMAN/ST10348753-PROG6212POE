@@ -3,9 +3,30 @@
 }
 
 <h2>Submit Claim</h2>
-<form method="post">
-    <label for="hoursWorked">Hours Worked:</label>
-    <input type="text" id="hoursWorked" name="hoursWorked" placeholder="Enter hours worked">
 
+<!-- Form to submit a claim -->
+<form method="post" asp-action="SubmitClaim">
+    <!-- Input field for the number of hours worked -->
+    <label for="hoursWorked">Hours Worked:</label>
+    <input type="number" id="hoursWorked" name="hoursWorked" placeholder="Enter hours worked" required />
+    <br />
+
+    <!-- Input field for the hourly rate -->
+    <label for="hourlyRate">Hourly Rate:</label>
+    <input type="number" id="hourlyRate" name="hourlyRate" placeholder="Enter hourly rate" required />
+    <br />
+
+    <!-- Text area for any additional notes -->
+    <label for="notes">Additional Notes:</label>
+    <textarea id="notes" name="notes" placeholder="Enter any additional information"></textarea>
+    <br />
+
+    <!-- Submit button to submit the claim -->
     <button type="submit">Submit Claim</button>
 </form>
+
+<!-- Display a success message if ViewBag.Message is set -->
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <p style="color: green;">@ViewBag.Message</p>
+}
