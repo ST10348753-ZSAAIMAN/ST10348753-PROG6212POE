@@ -138,11 +138,22 @@ namespace ST10348753_PROG6212POE.Controllers
 
 
         // Display the Claim Status
-        public IActionResult ClaimStatus()
+        public IActionResult ClaimStatus(int claimId)
         {
-            // This displays the current status of the claim
+            // Simulate retrieving the status of a claim based on the claimId
+            // This is hardcoded for now, but in a real application, you would retrieve this data from a database
+            string lecturerName = "John Doe";
+            string status = "Pending";
+
+            // Set the details to ViewBag properties to be used in the view
+            ViewBag.ClaimId = claimId;
+            ViewBag.Lecturer = lecturerName;
+            ViewBag.Status = status;
+
+            // Return the ClaimStatus view with the simulated data
             return View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
