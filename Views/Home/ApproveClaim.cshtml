@@ -3,9 +3,24 @@
 }
 
 <h2>Approve Claim</h2>
-<form method="post">
-    <p>Hours Worked: 10</p> <!-- Example static claim detail -->
 
+<!-- Display details of the claim for review -->
+<form method="post" asp-action="ApproveClaim">
+    <!-- Example claim details -->
+    <p><strong>Claim ID:</strong> 101</p>
+    <p><strong>Lecturer:</strong> John Doe</p>
+    <p><strong>Hours Worked:</strong> 10</p>
+    <p><strong>Hourly Rate:</strong> $50</p>
+    <p><strong>Total Amount:</strong> $500</p>
+    <p><strong>Status:</strong> Pending</p>
+
+    <!-- Approve and Reject buttons -->
     <button type="submit" name="action" value="Approve">Approve</button>
     <button type="submit" name="action" value="Reject">Reject</button>
 </form>
+
+<!-- Display the message from the server, if any -->
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <p style="color: green;">@ViewBag.Message</p>
+}
