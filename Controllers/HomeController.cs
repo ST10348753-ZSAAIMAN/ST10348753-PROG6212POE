@@ -77,10 +77,16 @@ namespace ST10348753_PROG6212POE.Controllers
 
         // Handle the approval or rejection of claims
         [HttpPost]
-        public IActionResult ApproveClaim(string action)
+        public IActionResult ApproveClaim(int claimId, string action)
         {
-            // Simulate an approval/rejection process
-            ViewBag.Message = action == "Approve" ? "Claim approved." : "Claim rejected.";
+            // Simulate updating the claim status based on the action provided (Approve or Reject)
+            string status = action == "Approve" ? "Approved" : "Rejected";
+
+            // For demonstration purposes, we can display a message indicating the claim status
+            // In the future, you would implement this with actual database updates
+            ViewBag.Message = $"Claim {claimId} has been {status}.";
+
+            // Return the ApproveClaim view to show the result
             return View();
         }
 
