@@ -99,12 +99,43 @@ namespace ST10348753_PROG6212POE.Controllers
 
         // Handle the file upload process
         [HttpPost]
-        public IActionResult UploadDocumentPost()
+        public IActionResult UploadDocumentPost(IFormFile uploadedFile)
         {
-            // Simulate the upload process
-            ViewBag.Message = "Document uploaded successfully.";
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                try
+                {
+                    // Define the path where the file will be saved
+                    var filePath = Path.Combine("wwwroot/uploads", uploadedFile.FileName);
+
+                    // Ensure the uploads folder exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    // Save the file to the server
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        uploadedFile.CopyTo(stream);
+                    }
+
+                    // Set a success message to indicate the upload was successful
+                    ViewBag.Message = "Document uploaded successfully.";
+                }
+                catch (Exception ex)
+                {
+                    // Handle any errors that occur during the file upload
+                    ViewBag.Message = $"An error occurred while uploading the document: {ex.Message}";
+                }
+            }
+            else
+            {
+                // Set an error message if no file was selected or the file is empty
+                ViewBag.Message = "Please select a valid file.";
+            }
+
+            // Return the UploadDocument view to display the success or error message
             return View();
         }
+
 
         // Display the Claim Status
         public IActionResult ClaimStatus()
