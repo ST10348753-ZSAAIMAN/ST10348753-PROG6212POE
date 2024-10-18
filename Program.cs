@@ -2,7 +2,7 @@
 // ST10348753
 // Group: 2
 
-// References: 
+// References:  
 // https://learn.microsoft.com/en-us/aspnet/core/mvc/overview?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-6.0
@@ -11,6 +11,22 @@
 // https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/dotnet/standard/class-libraries
 // https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/
+// https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/signalr/real-time-web-apps?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/dependency-injection?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test
+// https://learn.microsoft.com/en-us/dotnet/core/testing/testing-with-moq
+// https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection
+// https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-overview
+// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/introduction?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-6.0
+
 
 
 
