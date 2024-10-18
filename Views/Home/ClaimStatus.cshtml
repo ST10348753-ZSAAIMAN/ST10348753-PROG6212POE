@@ -3,4 +3,46 @@
 }
 
 <h2>Claim Status</h2>
-<p class="message">Your claim status is: Pending</p> <!-- Static message -->
+
+<!-- Display the dynamic claim details -->
+<p><strong>Claim ID:</strong> @ViewBag.ClaimId</p>
+<p><strong>Lecturer:</strong> @ViewBag.Lecturer</p>
+<p><strong>Status:</strong> @ViewBag.Status</p>
+
+<!-- Progress bar to visualize the claim status -->
+<div style="width: 100%; background-color: #f3f3f3; border-radius: 5px; margin-top: 10px;">
+    <div style="width: @GetProgressWidth(ViewBag.Status); height: 30px; background-color: @GetProgressColor(ViewBag.Status); text-align: center; color: white; border-radius: 5px;">
+        @ViewBag.Status
+    </div>
+</div>
+
+<!-- Helper functions to determine the progress width and color based on status -->
+@functions {
+    public string GetProgressWidth(string status)
+    {
+        return status switch
+        {
+            "Pending" => "33%",
+            "Approved" => "100%",
+            "Rejected" => "100%",
+            _ => "0%"
+        };
+    }
+
+    public string GetProgressColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "orange",
+            "Approved" => "green",
+            "Rejected" => "red",
+            _ => "gray"
+        };
+    }
+}
+
+<!-- Display a message if provided -->
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <p style="color: green;">@ViewBag.Message</p>
+}
