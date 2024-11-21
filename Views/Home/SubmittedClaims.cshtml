@@ -1,4 +1,5 @@
 ﻿@{
+    // Set the title for the page
     ViewData["Title"] = "Submitted Claims";
 }
 
@@ -7,50 +8,56 @@
 <!-- Check if there are any claims to display -->
 @if (ViewBag.Claims != null && ViewBag.Claims.Count > 0)
 {
-    <!-- Table to display submitted claims -->
+    <!-- Table to display all submitted claims -->
     <table class="table table-bordered">
         <thead>
+            <!-- Table header to display column names -->
             <tr>
-                <th>Claim ID</th>
-                <th>Lecturer Name</th>
-                <th>Hours Worked</th>
-                <th>Hourly Rate</th>
-                <th>Total Amount</th>
-                <th>Notes</th>
-                <th>Uploaded Document</th>
-                <th>Status</th>
-                <th>Actions</th> <!-- Add Actions column for Approve/Reject -->
+                <th>Claim ID</th> <!-- Unique identifier for the claim -->
+                <th>Lecturer Name</th> <!-- Name of the lecturer who submitted the claim -->
+                <th>Hours Worked</th> <!-- Number of hours worked -->
+                <th>Hourly Rate</th> <!-- Hourly rate for the work -->
+                <th>Total Amount</th> <!-- Calculated total amount (hours worked * hourly rate) -->
+                <th>Notes</th> <!-- Additional notes provided by the lecturer -->
+                <th>Uploaded Document</th> <!-- Link to the uploaded supporting document -->
+                <th>Status</th> <!-- Current status of the claim (e.g., Pending, Approved, Rejected) -->
+                <th>Actions</th> <!-- Buttons to approve or reject the claim -->
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each claim in the ViewBag.Claims list -->
             @foreach (var claim in ViewBag.Claims)
             {
                 <tr>
                     <!-- Display claim details -->
-                    <td>@claim.ClaimId</td>
-                    <td>@claim.LecturerName</td>
-                    <td>@claim.HoursWorked</td>
-                    <td>@claim.HourlyRate:C</td>
-                    <td>@claim.TotalAmount:C</td>
-                    <td>@claim.Notes</td>
+                    <td>@claim.ClaimId</td> <!-- Claim ID -->
+                    <td>@claim.LecturerName</td> <!-- Lecturer's name -->
+                    <td>@claim.HoursWorked</td> <!-- Number of hours worked -->
+                    <td>@claim.HourlyRate:C</td> <!-- Hourly rate formatted as currency -->
+                    <td>@claim.TotalAmount:C</td> <!-- Total amount formatted as currency -->
+                    <td>@claim.Notes</td> <!-- Additional notes -->
                     <td>
-                        <!-- Check if a document is uploaded -->
+                        <!-- Check if a document path is available -->
                         @if (!string.IsNullOrEmpty(claim.DocumentPath))
                         {
-                            <!-- Link to uploaded document -->
-                            <a href="@claim.DocumentPath" target="_blank" title="Click to view document">View Document</a>
+                            <!-- Link to view the uploaded document -->
+                            <a href="@claim.DocumentPath" target="_blank">View Document</a>
                         }
                         else
                         {
+                            <!-- Message if no document is uploaded -->
                             <span>No document uploaded</span>
                         }
                     </td>
-                    <td>@claim.Status</td>
+                    <td>@claim.Status</td> <!-- Current claim status -->
                     <td>
-                        <!-- Approve and Reject buttons -->
+                        <!-- Form to approve or reject the claim -->
                         <form method="post" asp-action="ApproveClaim">
+                            <!-- Hidden input to pass the Claim ID -->
                             <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                            <!-- Button to approve the claim -->
                             <button type="submit" name="action" value="Approve" class="btn btn-success btn-sm">Approve</button>
+                            <!-- Button to reject the claim -->
                             <button type="submit" name="action" value="Reject" class="btn btn-danger btn-sm">Reject</button>
                         </form>
                     </td>
@@ -61,6 +68,6 @@
 }
 else
 {
-    <!-- Message to display if there are no claims -->
+    <!-- Message to display if no claims have been submitted -->
     <p>No claims have been submitted yet.</p>
 }

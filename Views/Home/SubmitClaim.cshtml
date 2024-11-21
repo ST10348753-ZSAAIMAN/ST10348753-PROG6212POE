@@ -1,12 +1,13 @@
 ﻿@{
+    // Set the title for the page
     ViewData["Title"] = "Submit Claim";
 }
 
 <h2>Submit Claim</h2>
 
-<!-- Form to submit a claim -->
+<!-- Form for submitting a claim -->
 <form method="post" asp-action="SubmitClaim" enctype="multipart/form-data">
-    <!-- Input field for the number of hours worked -->
+    <!-- Input field for hours worked -->
     <label for="hoursWorked">Hours Worked:</label>
     <input type="number" id="hoursWorked" name="hoursWorked" placeholder="Enter hours worked" required />
     <br />
@@ -16,18 +17,14 @@
     <input type="number" id="hourlyRate" name="hourlyRate" placeholder="Enter hourly rate" required />
     <br />
 
-    <!-- Text area for any additional notes -->
+    <!-- Text area for additional notes -->
     <label for="notes">Additional Notes:</label>
-    <textarea id="notes" name="notes" placeholder="Enter any additional information"></textarea>
+    <textarea id="notes" name="notes" placeholder="Enter notes"></textarea>
     <br />
 
     <!-- File input for uploading supporting documents -->
     <label for="document">Upload Supporting Document:</label>
     <input type="file" id="document" name="document" accept=".pdf,.docx,.xlsx" />
-    <br />
-
-    <!-- Button specifically for uploading documents -->
-    <button type="button" id="uploadButton" onclick="document.getElementById('document').click();">Upload Document</button>
     <br />
 
     <!-- Submit button to submit the claim -->
@@ -37,5 +34,7 @@
 <!-- Display a success or error message if ViewBag.Message is set -->
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <p style="color: @(ViewBag.IsError ? "red" : "green");">@ViewBag.Message</p>
+    <p style="color: @(ViewBag.IsError ? "red" : "green");">
+        @ViewBag.Message
+    </p>
 }

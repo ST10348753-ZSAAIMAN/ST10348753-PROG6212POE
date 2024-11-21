@@ -24,7 +24,7 @@ namespace ST10348753_PROG6212POE.Controllers
         private readonly ILogger<HomeController> _logger;
 
         // Add this static list for simulating a database
-        private static List<dynamic> claims = new List<dynamic>(); // Simulating a database
+        private static List<Claim> claims = new List<Claim>(); // In-memory list of claims
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -48,16 +48,14 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
-        // Handle claim submission along with a file upload
         [HttpPost]
         public IActionResult SubmitClaim(decimal hoursWorked, decimal hourlyRate, string notes, IFormFile document)
         {
+            // Validate and save the uploaded document
+            string documentPath = null; // Initialize document path
             if (document != null && document.Length > 0)
             {
-                // Validate file size and type
-                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
-                var fileExtension = Path.GetExtension(document.FileName).ToLower();
-
+                // Validate file size (2MB limit)
                 if (document.Length > 2 * 1024 * 1024)
                 {
                     ViewBag.Message = "Error: File size exceeds 2MB.";
@@ -65,6 +63,9 @@ namespace ST10348753_PROG6212POE.Controllers
                     return View();
                 }
 
+                // Validate file type
+                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+                var fileExtension = Path.GetExtension(document.FileName).ToLower();
                 if (!allowedExtensions.Contains(fileExtension))
                 {
                     ViewBag.Message = "Error: Invalid file type. Allowed types are PDF, DOCX, and XLSX.";
@@ -72,36 +73,35 @@ namespace ST10348753_PROG6212POE.Controllers
                     return View();
                 }
 
-                // Save file
-                var filePath = Path.Combine("wwwroot/uploads", Guid.NewGuid() + Path.GetExtension(document.FileName));
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                // Save the file to a unique path
+                documentPath = Path.Combine("wwwroot/uploads", Guid.NewGuid() + fileExtension);
+                Directory.CreateDirectory(Path.GetDirectoryName(documentPath));
+                using (var stream = new FileStream(documentPath, FileMode.Create))
                 {
                     document.CopyTo(stream);
                 }
-
-                ViewBag.FileMessage = $"Document {document.FileName} uploaded successfully.";
             }
 
-            // Save claim details in the in-memory list
-            var totalAmount = hoursWorked * hourlyRate;
-            claims.Add(new
+            // Create a new claim and add it to the list
+            var claim = new Claim
             {
-                ClaimId = claims.Count + 1,
-                LecturerName = "John Doe", // Example name; integrate authentication later
+                ClaimId = claims.Count + 1, // Auto-generate ClaimId
+                LecturerName = "John Doe", // Replace with actual lecturer name when authentication is added
                 HoursWorked = hoursWorked,
                 HourlyRate = hourlyRate,
-                TotalAmount = totalAmount,
+                TotalAmount = hoursWorked * hourlyRate, // Calculate total amount
                 Notes = notes,
-                DocumentPath = document != null ? $"/uploads/{document.FileName}" : null,
-                Status = "Pending"
-            });
+                DocumentPath = documentPath != null ? $"/uploads/{Path.GetFileName(documentPath)}" : null,
+                Status = "Pending" // Default status
+            };
+            claims.Add(claim); // Add the new claim to the list
 
             ViewBag.Message = "Claim submitted successfully.";
             ViewBag.IsError = false;
 
             return View();
         }
+
 
 
 
@@ -123,9 +123,11 @@ namespace ST10348753_PROG6212POE.Controllers
         [HttpPost]
         public IActionResult ApproveClaim(int claimId, string action)
         {
+            // Find the claim by ClaimId
             var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
             if (claim != null)
             {
+                // Update the status based on the action
                 claim.Status = action == "Approve" ? "Approved" : "Rejected";
                 ViewBag.Message = $"Claim {claimId} has been {claim.Status}.";
             }
@@ -134,9 +136,10 @@ namespace ST10348753_PROG6212POE.Controllers
                 ViewBag.Message = "Error: Claim not found.";
             }
 
-            ViewBag.Claims = claims;
+            ViewBag.Claims = claims; // Pass the updated claims list to the view
             return View("SubmittedClaims");
         }
+
 
 
 
@@ -213,10 +216,11 @@ namespace ST10348753_PROG6212POE.Controllers
         // Display a list of all submitted claims
         public IActionResult ViewSubmittedClaims()
         {
-            // Pass the in-memory claims list to the view using ViewBag
+            // Pass the list of claims to the view
             ViewBag.Claims = claims;
             return View();
         }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
