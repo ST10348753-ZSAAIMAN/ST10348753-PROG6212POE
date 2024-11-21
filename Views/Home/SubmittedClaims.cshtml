@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Submitted Claims";
+}
+
+<h2>Submitted Claims</h2>
+
+<!-- Check if there are any claims to display -->
+@if (ViewBag.Claims != null && ViewBag.Claims.Count > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Lecturer Name</th>
+                <th>Hours Worked</th>
+                <th>Hourly Rate</th>
+                <th>Total Amount</th>
+                <th>Notes</th>
+                <th>Uploaded Document</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in ViewBag.Claims)
+            {
+                <tr>
+                    <td>@claim.ClaimId</td>
+                    <td>@claim.LecturerName</td>
+                    <td>@claim.HoursWorked</td>
+                    <td>@claim.HourlyRate:C</td>
+                    <td>@claim.TotalAmount:C</td>
+                    <td>@claim.Notes</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(claim.DocumentPath))
+                        {
+                            <a href="@claim.DocumentPath" target="_blank">View Document</a>
+                        }
+                        else
+                        {
+                            <span>No document uploaded</span>
+                        }
+                    </td>
+                    <td>@claim.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No claims have been submitted yet.</p>
+}
