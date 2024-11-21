@@ -73,7 +73,7 @@ namespace ST10348753_PROG6212POE.Controllers
                 }
 
                 // Save file
-                var filePath = Path.Combine("wwwroot/uploads", document.FileName);
+                var filePath = Path.Combine("wwwroot/uploads", Guid.NewGuid() + Path.GetExtension(document.FileName));
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
