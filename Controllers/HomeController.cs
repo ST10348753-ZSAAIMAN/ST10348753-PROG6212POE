@@ -44,21 +44,58 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
-        // Handle the form submission for Submit Claim
+        // Handle the form submission for Submit Claim with file upload
         [HttpPost]
-        public IActionResult SubmitClaim(decimal hoursWorked, decimal hourlyRate, string notes)
+        public IActionResult SubmitClaim(decimal hoursWorked, decimal hourlyRate, string notes, IFormFile document)
         {
-            // Calculate the total amount based on hours worked and hourly rate
+            // Validate the uploaded file
+            if (document != null)
+            {
+                if (document.Length > 2 * 1024 * 1024) // Restrict file size to 2MB
+                {
+                    ViewBag.Message = "Error: File size exceeds 2MB.";
+                    ViewBag.IsError = true;
+                    return View();
+                }
+
+                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+                var fileExtension = Path.GetExtension(document.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    ViewBag.Message = "Error: Invalid file type. Allowed types are PDF, DOCX, and XLSX.";
+                    ViewBag.IsError = true;
+                    return View();
+                }
+
+                try
+                {
+                    // Save the file
+                    var filePath = Path.Combine("wwwroot/uploads", document.FileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        document.CopyTo(stream);
+                    }
+
+                    ViewBag.FileMessage = $"Document {document.FileName} uploaded successfully.";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = $"Error uploading document: {ex.Message}";
+                    ViewBag.IsError = true;
+                    return View();
+                }
+            }
+
+            // Calculate the total amount
             decimal totalAmount = hoursWorked * hourlyRate;
 
-            // Simulate saving the claim details to a database (for demonstration purposes)
-            // In the future, you would connect this to a database for actual storage
+            // Simulate saving the claim details
+            ViewBag.Message = $"Claim submitted for {hoursWorked} hours at {hourlyRate:C} per hour. Total: {totalAmount:C}. Notes: {notes}";
+            ViewBag.IsError = false;
 
-            // Set a success message to be displayed to the user
-            ViewBag.Message = $"Claim submitted for {hoursWorked} hours at {hourlyRate:C} per hour. " +
-                              $"Total amount: {totalAmount:C}. Additional notes: {notes}";
-
-            // Return the same view to display the success message
             return View();
         }
 
