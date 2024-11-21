@@ -12,38 +12,68 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Claim ID</th>
-                <th>Lecturer Name</th>
-                <th>Hours Worked</th>
-                <th>Hourly Rate</th>
-                <th>Total Amount</th>
-                <th>Notes</th>
-                <th>Uploaded Document</th>
-                <th>Status</th>
+                <th>Claim ID</th> <!-- Unique identifier for the claim -->
+                <th>Lecturer Name</th> <!-- Name of the lecturer who submitted the claim -->
+                <th>Hours Worked</th> <!-- Number of hours worked -->
+                <th>Hourly Rate</th> <!-- Hourly rate for the work -->
+                <th>Total Amount</th> <!-- Total amount calculated (hours worked * hourly rate) -->
+                <th>Notes</th> <!-- Additional notes provided by the lecturer -->
+                <th>Uploaded Document</th> <!-- Uploaded supporting document (if any) -->
+                <th>Status</th> <!-- Current status of the claim -->
+                <th>Flagged Status</th> <!-- Indicates if the claim is flagged -->
+                <th>Actions</th> <!-- Links to claim-specific actions -->
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each claim in the list -->
             @foreach (var claim in (List<ST10348753_PROG6212POE.Models.Claim>)ViewBag.Claims)
             {
-                <tr>
-                    <td>@claim.ClaimId</td>
-                    <td>@claim.LecturerName</td>
-                    <td>@claim.HoursWorked</td>
-                    <td>@claim.HourlyRate:C</td> <!-- Currency formatting -->
-                    <td>@claim.TotalAmount:C</td> <!-- Currency formatting -->
-                    <td>@claim.Notes</td>
+                <tr style="@(claim.IsFlagged ? "background-color: #ffe6e6;" : "")">
+                    <!-- Highlight flagged claims -->
+                    <td>@claim.ClaimId</td> <!-- Display the Claim ID -->
+                    <td>@claim.LecturerName</td> <!-- Display the Lecturer's name -->
+                    <td>@claim.HoursWorked</td> <!-- Display the number of hours worked -->
+                    <td>@claim.HourlyRate:C</td> <!-- Format hourly rate as currency -->
+                    <td>@claim.TotalAmount:C</td> <!-- Format total amount as currency -->
+                    <td>@claim.Notes</td> <!-- Display any additional notes -->
+
                     <td>
                         <!-- Check if a document is uploaded -->
                         @if (!string.IsNullOrEmpty(claim.DocumentPath))
                         {
-                            <a href="@claim.DocumentPath" target="_blank">View Document</a>
+                            <!-- Provide a link to view the uploaded document -->
+                            <a href="@claim.DocumentPath" target="_blank" title="View the uploaded document">
+                                View Document
+                            </a>
                         }
                         else
                         {
+                            <!-- Indicate that no document was uploaded -->
                             <span>No document uploaded</span>
                         }
                     </td>
-                    <td>@claim.Status</td>
+
+                    <td>@claim.Status</td> <!-- Display the current claim status -->
+
+                    <td>
+                        <!-- Display flagged status with reason if applicable -->
+                        @if (claim.IsFlagged)
+                        {
+                            <span style="color: red;">Flagged: @claim.FlagReason</span> <!-- Show flag reason -->
+                        }
+                        else
+                        {
+                            <span style="color: green;">Not Flagged</span> <!-- Indicate the claim is not flagged -->
+                        }
+                    </td>
+
+                    <td>
+                        <!-- Provide a link to check claim status -->
+                        <a asp-controller="Home" asp-action="ClaimStatus" asp-route-claimId="@claim.ClaimId"
+                           class="btn btn-info btn-sm" title="Check the status of this claim">
+                            Check Status
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Approve Claim";
 }
 
-<h2>Approve Claims</h2>
+<h2>Approve Claim</h2>
 
 <!-- Check if there are claims awaiting approval -->
 @if (ViewBag.Claims != null && ((List<ST10348753_PROG6212POE.Models.Claim>)ViewBag.Claims).Count > 0)
@@ -12,57 +12,52 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Claim ID</th> <!-- Unique identifier for the claim -->
-                <th>Lecturer Name</th> <!-- Name of the lecturer who submitted the claim -->
-                <th>Hours Worked</th> <!-- Number of hours worked -->
-                <th>Hourly Rate</th> <!-- Hourly rate for the work -->
-                <th>Total Amount</th> <!-- Total amount calculated (hours worked * hourly rate) -->
-                <th>Notes</th> <!-- Additional notes provided by the lecturer -->
-                <th>Uploaded Document</th> <!-- Uploaded supporting document (if any) -->
-                <th>Actions</th> <!-- Buttons for approving or rejecting the claim -->
+                <th>Claim ID</th>
+                <th>Lecturer Name</th>
+                <th>Hours Worked</th>
+                <th>Hourly Rate</th>
+                <th>Total Amount</th>
+                <th>Notes</th>
+                <th>Flag Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Loop through each pending claim in the list -->
+            <!-- Iterate through each claim -->
             @foreach (var claim in (List<ST10348753_PROG6212POE.Models.Claim>)ViewBag.Claims)
             {
-                <tr>
-                    <td>@claim.ClaimId</td> <!-- Display the Claim ID -->
-                    <td>@claim.LecturerName</td> <!-- Display the Lecturer's name -->
-                    <td>@claim.HoursWorked</td> <!-- Display the number of hours worked -->
-                    <td>@claim.HourlyRate:C</td> <!-- Format hourly rate as currency -->
-                    <td>@claim.TotalAmount:C</td> <!-- Format total amount as currency -->
-                    <td>@claim.Notes</td> <!-- Display any additional notes -->
-
+                <!-- Apply a red background for flagged claims -->
+                <tr style="background-color: @(claim.IsFlagged ? "#ffe6e6" : "white");">
+                    <td>@claim.ClaimId</td>
+                    <td>@claim.LecturerName</td>
+                    <td>@claim.HoursWorked</td>
+                    <td>@claim.HourlyRate:C</td> <!-- Currency formatting -->
+                    <td>@claim.TotalAmount:C</td> <!-- Currency formatting -->
+                    <td>@claim.Notes</td>
                     <td>
-                        <!-- Check if a document is uploaded -->
-                        @if (!string.IsNullOrEmpty(claim.DocumentPath))
+                        <!-- Display flag status -->
+                        @if (claim.IsFlagged)
                         {
-                            <!-- Provide a link to view the uploaded document -->
-                            <a href="@claim.DocumentPath" target="_blank" title="View the uploaded document">
-                                View Document
-                            </a>
+                            <span style="color: red; font-weight: bold;">Flagged</span>
+                            <br />
+                            <small style="color: gray;">Reason: @claim.FlagReason</small>
                         }
                         else
                         {
-                            <!-- Indicate that no document was uploaded -->
-                            <span>No document uploaded</span>
+                            <span style="color: green; font-weight: bold;">Not Flagged</span>
                         }
                     </td>
-
                     <td>
                         <!-- Form for approving or rejecting claims -->
                         <form method="post" asp-action="ApproveClaim">
-                            <!-- Hidden input to pass the Claim ID -->
                             <input type="hidden" name="claimId" value="@claim.ClaimId" />
 
-                            <!-- Button to approve the claim -->
-                            <button type="submit" name="action" value="Approve" class="btn btn-success btn-sm" title="Approve this claim">
+                            <!-- Approve button disabled if claim is flagged -->
+                            <button type="submit" name="action" value="Approve" class="btn btn-success btn-sm" @(claim.IsFlagged ? "disabled" : "")>
                                 Approve
                             </button>
-
-                            <!-- Button to reject the claim -->
-                            <button type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" title="Reject this claim">
+                            <!-- Reject button is always enabled -->
+                            <button type="submit" name="action" value="Reject" class="btn btn-danger btn-sm">
                                 Reject
                             </button>
                         </form>
@@ -74,11 +69,11 @@
 }
 else
 {
-    <!-- Display a message if no claims are found -->
+    <!-- Message displayed when no claims are found -->
     <p style="color: red;">No claims found to approve or reject.</p>
 }
 
-<!-- Display success or error messages from the controller -->
+<!-- Display success or error message from the controller -->
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
     <p style="color: @(ViewBag.IsError != null && (bool)ViewBag.IsError ? "red" : "green");">

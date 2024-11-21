@@ -5,23 +5,31 @@
 
 <h2>Claim Status</h2>
 
-<!-- Display the dynamic claim details using ViewBag values -->
-<p><strong>Claim ID:</strong> @ViewBag.ClaimId</p> <!-- Displays the Claim ID -->
-<p><strong>Lecturer:</strong> @ViewBag.Lecturer</p> <!-- Displays the name of the lecturer -->
-<p><strong>Status:</strong> @ViewBag.Status</p> <!-- Displays the current status of the claim -->
-<!-- Progress bar to visualize the claim status -->
-<div style="width: 100%; background-color: #f3f3f3; border-radius: 5px; margin-top: 10px;">
-    <!-- Inner div to represent the progress bar -->
-    <div style="width: @GetProgressWidth(ViewBag.Status);
-                height: 30px;
-                background-color: @GetProgressColor(ViewBag.Status);
-                text-align: center;
-                color: white;
-                border-radius: 5px;">
-        <!-- Display the status text inside the progress bar -->
-        @ViewBag.Status
+<!-- Display success or error message, if any -->
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <p style="color: red;">@ViewBag.Message</p> <!-- Display error messages in red -->
+}
+else
+{
+    <!-- Display claim details only if ViewBag.Message is empty -->
+    <p><strong>Claim ID:</strong> @ViewBag.ClaimId</p> <!-- Displays the Claim ID -->
+    <p><strong>Lecturer:</strong> @ViewBag.Lecturer</p> <!-- Displays the name of the lecturer -->
+    <p><strong>Status:</strong> @ViewBag.Status</p> <!-- Displays the current status of the claim -->
+    <!-- Progress bar to visualize the claim status -->
+    <div style="width: 100%; background-color: #f3f3f3; border-radius: 5px; margin-top: 10px;">
+        <!-- Inner div to represent the progress bar -->
+        <div style="width: @GetProgressWidth(ViewBag.Status);
+                    height: 30px;
+                    background-color: @GetProgressColor(ViewBag.Status);
+                    text-align: center;
+                    color: white;
+                    border-radius: 5px;">
+            <!-- Display the status text inside the progress bar -->
+            @ViewBag.Status
+        </div>
     </div>
-</div>
+}
 
 <!-- Helper functions to calculate progress bar width and color dynamically -->
 @functions {
@@ -56,10 +64,4 @@
             _ => "gray"            // Default to gray for unknown status
         };
     }
-}
-
-<!-- Display a success or error message, if any -->
-@if (!string.IsNullOrEmpty(ViewBag.Message))
-{
-    <p style="color: green;">@ViewBag.Message</p> <!-- Displays a message in green if not empty -->
 }

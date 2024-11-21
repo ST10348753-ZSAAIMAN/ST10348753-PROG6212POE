@@ -16,21 +16,33 @@ namespace ST10348753_PROG6212POE.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Displays the home page.
+        /// </summary>
         public IActionResult Index()
         {
             return View();
         }
 
+        /// <summary>
+        /// Displays the privacy policy page.
+        /// </summary>
         public IActionResult Privacy()
         {
             return View();
         }
 
+        /// <summary>
+        /// Displays the form to submit a claim.
+        /// </summary>
         public IActionResult SubmitClaim()
         {
             return View();
         }
 
+        /// <summary>
+        /// Handles the submission of a claim with validations and file upload.
+        /// </summary>
         [HttpPost]
         public IActionResult SubmitClaim(decimal hoursWorked, decimal hourlyRate, string? notes, IFormFile? document)
         {
@@ -76,6 +88,18 @@ namespace ST10348753_PROG6212POE.Controllers
                 documentPath: documentPath != null ? $"/uploads/{Path.GetFileName(documentPath)}" : null
             );
 
+            // Apply flagging logic
+            if (hoursWorked > 100) // Example threshold
+            {
+                claim.IsFlagged = true;
+                claim.FlagReason = "Hours worked exceed the maximum allowable threshold.";
+            }
+            else if (hourlyRate > 1000) // Example threshold
+            {
+                claim.IsFlagged = true;
+                claim.FlagReason = "Hourly rate exceeds the reasonable threshold.";
+            }
+
             claims.Add(claim);
 
             ViewBag.Message = "Claim submitted successfully.";
@@ -85,53 +109,82 @@ namespace ST10348753_PROG6212POE.Controllers
         }
 
         /// <summary>
-        /// Displays a list of pending claims for approval or rejection.
+        /// Displays claims pending approval or flagged for review.
         /// </summary>
-        /// <returns>The ApproveClaim view.</returns>
         public IActionResult ApproveClaim()
         {
-            // Filter pending claims for approval
             ViewBag.Claims = claims.Where(c => c.Status == "Pending").ToList();
-            ViewBag.IsError = false; // Ensure ViewBag.IsError is explicitly set
+            ViewBag.IsError = false;
             return View();
         }
 
         /// <summary>
-        /// Handles the approval or rejection of a claim.
+        /// Handles claim approval or rejection.
         /// </summary>
-        /// <param name="claimId">The ID of the claim to approve or reject.</param>
-        /// <param name="action">The action to perform ("Approve" or "Reject").</param>
-        /// <returns>The ApproveClaim view with updated status.</returns>
         [HttpPost]
         public IActionResult ApproveClaim(int claimId, string action)
         {
-            // Find the claim by ID
             var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
             if (claim != null)
             {
-                // Update the claim's status based on the action
-                claim.Status = action == "Approve" ? "Approved" : "Rejected";
-                ViewBag.Message = $"Claim {claimId} has been {claim.Status}.";
-                ViewBag.IsError = false; // Indicate success
+                if (claim.IsFlagged && action == "Approve")
+                {
+                    ViewBag.Message = $"Claim {claimId} is flagged: {claim.FlagReason}. Please resolve before approving.";
+                    ViewBag.IsError = true;
+                }
+                else
+                {
+                    claim.Status = action == "Approve" ? "Approved" : "Rejected";
+                    ViewBag.Message = $"Claim {claimId} has been {claim.Status}.";
+                    ViewBag.IsError = false;
+                }
             }
             else
             {
                 ViewBag.Message = "Error: Claim not found.";
-                ViewBag.IsError = true; // Indicate error
+                ViewBag.IsError = true;
             }
 
-            // Refresh the list of pending claims
             ViewBag.Claims = claims.Where(c => c.Status == "Pending").ToList();
             return View();
         }
 
+        /// <summary>
+        /// Displays the status of a specific claim.
+        /// </summary>
+        /// <param name="claimId">ID of the claim to check the status.</param>
+        /// <returns>The ClaimStatus view.</returns>
+        public IActionResult ClaimStatus(int claimId)
+        {
+            var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
 
+            if (claim != null)
+            {
+                // Pass claim details to the view via ViewBag
+                ViewBag.ClaimId = claim.ClaimId;
+                ViewBag.Lecturer = claim.LecturerName;
+                ViewBag.Status = claim.Status;
+            }
+            else
+            {
+                ViewBag.Message = "Claim not found.";
+            }
+
+            return View();
+        }
+
+        /// <summary>
+        /// Displays all submitted claims.
+        /// </summary>
         public IActionResult ViewSubmittedClaims()
         {
             ViewBag.Claims = claims;
             return View();
         }
 
+        /// <summary>
+        /// Handles errors in the application.
+        /// </summary>
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
