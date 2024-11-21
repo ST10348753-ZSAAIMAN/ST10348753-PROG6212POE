@@ -19,6 +19,11 @@
     <small style="color: red;" id="hourlyRateError"></small>
     <br />
 
+    <!-- Auto-calculated total amount -->
+    <label for="totalAmount">Total Amount:</label>
+    <input type="text" id="totalAmount" name="totalAmount" readonly />
+    <br />
+
     <!-- Text area for additional notes -->
     <label for="notes">Additional Notes:</label>
     <textarea id="notes" name="notes" placeholder="Enter notes (optional)"></textarea>
@@ -27,61 +32,80 @@
     <!-- File input for uploading supporting documents -->
     <label for="document">Upload Supporting Document:</label>
     <input type="file" id="document" name="document" accept=".pdf,.docx,.xlsx" />
+    <small style="color: gray;">Allowed file types: PDF, DOCX, XLSX. Max size: 2MB.</small>
     <small style="color: red;" id="documentError"></small>
     <br />
 
-    <!-- Submit button to submit the claim -->
+    <!-- Submit button -->
     <button type="submit">Submit Claim</button>
 </form>
 
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <!-- Display the message -->
+    <!-- Display success or error message -->
     <p style="color: @(ViewBag.IsError ? "red" : "green");">
         @ViewBag.Message
     </p>
 }
 
 <script>
-    // Client-side validation script
-    document.querySelector("form").addEventListener("submit", function (e) {
-        let valid = true;
-
-        // Validate hours worked
+    document.addEventListener("DOMContentLoaded", function () {
         const hoursWorked = document.getElementById("hoursWorked");
-        if (hoursWorked.value <= 0) {
-            document.getElementById("hoursWorkedError").innerText = "Please enter a valid number of hours.";
-            valid = false;
-        } else {
-            document.getElementById("hoursWorkedError").innerText = "";
-        }
-
-        // Validate hourly rate
         const hourlyRate = document.getElementById("hourlyRate");
-        if (hourlyRate.value <= 0) {
-            document.getElementById("hourlyRateError").innerText = "Please enter a valid hourly rate.";
-            valid = false;
-        } else {
-            document.getElementById("hourlyRateError").innerText = "";
-        }
-
-        // Validate document upload
+        const totalAmount = document.getElementById("totalAmount");
         const documentInput = document.getElementById("document");
-        if (documentInput.files.length > 0) {
-            const allowedExtensions = [".pdf", ".docx", ".xlsx"];
-            const fileName = documentInput.value.toLowerCase();
-            const validExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
-            if (!validExtension) {
-                document.getElementById("documentError").innerText = "Only PDF, DOCX, and XLSX files are allowed.";
+
+        // Auto-calculate total amount
+        const calculateTotal = () => {
+            const hours = parseFloat(hoursWorked.value) || 0;
+            const rate = parseFloat(hourlyRate.value) || 0;
+            totalAmount.value = (hours * rate).toFixed(2);
+        };
+
+        hoursWorked.addEventListener("input", calculateTotal);
+        hourlyRate.addEventListener("input", calculateTotal);
+
+        // Client-side validation
+        document.querySelector("form").addEventListener("submit", function (e) {
+            let valid = true;
+
+            // Validate hours worked
+            if (hoursWorked.value <= 0) {
+                document.getElementById("hoursWorkedError").innerText = "Please enter a valid number of hours.";
                 valid = false;
             } else {
-                document.getElementById("documentError").innerText = "";
+                document.getElementById("hoursWorkedError").innerText = "";
             }
-        }
 
-        // Prevent form submission if validation fails
-        if (!valid) {
-            e.preventDefault();
-        }
+            // Validate hourly rate
+            if (hourlyRate.value <= 0) {
+                document.getElementById("hourlyRateError").innerText = "Please enter a valid hourly rate.";
+                valid = false;
+            } else {
+                document.getElementById("hourlyRateError").innerText = "";
+            }
+
+            // Validate document upload
+            if (documentInput.files.length > 0) {
+                const allowedExtensions = [".pdf", ".docx", ".xlsx"];
+                const fileName = documentInput.value.toLowerCase();
+                const validExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+                const maxSize = 2 * 1024 * 1024; // 2 MB
+
+                if (!validExtension) {
+                    document.getElementById("documentError").innerText = "Only PDF, DOCX, and XLSX files are allowed.";
+                    valid = false;
+                } else if (documentInput.files[0].size > maxSize) {
+                    document.getElementById("documentError").innerText = "File size exceeds 2MB.";
+                    valid = false;
+                } else {
+                    document.getElementById("documentError").innerText = "";
+                }
+            }
+
+            if (!valid) {
+                e.preventDefault(); // Prevent form submission if validation fails
+            }
+        });
     });
 </script>
