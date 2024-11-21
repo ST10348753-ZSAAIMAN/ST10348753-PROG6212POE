@@ -123,28 +123,21 @@ namespace ST10348753_PROG6212POE.Controllers
         [HttpPost]
         public IActionResult ApproveClaim(int claimId, string action)
         {
-            // Find the claim in the in-memory storage using Claim ID
             var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
-
-            // Check if the claim exists
             if (claim != null)
             {
-                // Update the claim status based on the action (Approve or Reject)
                 claim.Status = action == "Approve" ? "Approved" : "Rejected";
-
-                // Display a success message indicating the updated status
                 ViewBag.Message = $"Claim {claimId} has been {claim.Status}.";
             }
             else
             {
-                // Display an error message if the claim is not found
-                ViewBag.Message = "Claim not found.";
+                ViewBag.Message = "Error: Claim not found.";
             }
 
-            // Pass the updated claims list to the view
             ViewBag.Claims = claims;
-            return View("ViewSubmittedClaims"); // Redirect to the claims list view
+            return View("SubmittedClaims");
         }
+
 
 
         // Display the Document Upload form
