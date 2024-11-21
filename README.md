@@ -103,5 +103,4 @@ The GUI is designed using ASP.NET Core MVC with the following views:
 ---
 
 ## Version Control
-
-All changes and progress are version-controlled through GitHub with regular commits, documenting the development process. The repository can be found at: [https://github.com/ST10348753-ZSAAIMAN/ST10348753-PROG6212POE](https://github.com/ST10348753-ZSAAIMAN/ST10348753-PROG6212POE)
+All changes and progress are version-controlled through GitHub with regular commits, documenting the development process. The repository can be found at: [https://github.com/yourusername/ST10348753_PROG6212POE.git](https://github.com/ST10348753-ZSAAIMAN/ST10348753-PROG6212POE) 
