@@ -84,29 +84,47 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Displays a list of pending claims for approval or rejection.
+        /// </summary>
+        /// <returns>The ApproveClaim view.</returns>
         public IActionResult ApproveClaim()
         {
+            // Filter pending claims for approval
             ViewBag.Claims = claims.Where(c => c.Status == "Pending").ToList();
+            ViewBag.IsError = false; // Ensure ViewBag.IsError is explicitly set
             return View();
         }
 
+        /// <summary>
+        /// Handles the approval or rejection of a claim.
+        /// </summary>
+        /// <param name="claimId">The ID of the claim to approve or reject.</param>
+        /// <param name="action">The action to perform ("Approve" or "Reject").</param>
+        /// <returns>The ApproveClaim view with updated status.</returns>
         [HttpPost]
         public IActionResult ApproveClaim(int claimId, string action)
         {
+            // Find the claim by ID
             var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
             if (claim != null)
             {
+                // Update the claim's status based on the action
                 claim.Status = action == "Approve" ? "Approved" : "Rejected";
                 ViewBag.Message = $"Claim {claimId} has been {claim.Status}.";
+                ViewBag.IsError = false; // Indicate success
             }
             else
             {
                 ViewBag.Message = "Error: Claim not found.";
+                ViewBag.IsError = true; // Indicate error
             }
 
+            // Refresh the list of pending claims
             ViewBag.Claims = claims.Where(c => c.Status == "Pending").ToList();
             return View();
         }
+
 
         public IActionResult ViewSubmittedClaims()
         {
