@@ -5,7 +5,7 @@
 <h2>Submit Claim</h2>
 
 <!-- Form to submit a claim -->
-<form method="post" asp-action="SubmitClaim">
+<form method="post" asp-action="SubmitClaim" enctype="multipart/form-data">
     <!-- Input field for the number of hours worked -->
     <label for="hoursWorked">Hours Worked:</label>
     <input type="number" id="hoursWorked" name="hoursWorked" placeholder="Enter hours worked" required />
@@ -21,12 +21,17 @@
     <textarea id="notes" name="notes" placeholder="Enter any additional information"></textarea>
     <br />
 
+    <!-- File input for uploading supporting documents -->
+    <label for="document">Upload Supporting Document:</label>
+    <input type="file" id="document" name="document" accept=".pdf,.docx,.xlsx" />
+    <br />
+
     <!-- Submit button to submit the claim -->
     <button type="submit">Submit Claim</button>
 </form>
 
-<!-- Display a success message if ViewBag.Message is set -->
+<!-- Display a success or error message if ViewBag.Message is set -->
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <p style="color: green;">@ViewBag.Message</p>
+    <p style="color: @(ViewBag.IsError ? "red" : "green");">@ViewBag.Message</p>
 }
