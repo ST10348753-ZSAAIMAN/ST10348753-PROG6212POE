@@ -150,51 +150,39 @@ namespace ST10348753_PROG6212POE.Controllers
         [HttpPost]
         public IActionResult UploadDocumentPost(IFormFile document)
         {
-            if (document != null && document.Length > 0)
-            {
-                try
-                {
-                    // Restrict file size to 2MB
-                    if (document.Length > 2 * 1024 * 1024)
-                    {
-                        ViewBag.Message = "File size exceeds 2 MB.";
-                        return View("UploadDocument");
-                    }
-
-                    // Restrict file types to PDF, DOCX, and XLSX
-                    var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
-                    var fileExtension = Path.GetExtension(document.FileName).ToLower();
-
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        ViewBag.Message = "Invalid file type. Only PDF, DOCX, and XLSX are allowed.";
-                        return View("UploadDocument");
-                    }
-
-                    // Save the file
-                    var filePath = Path.Combine("wwwroot/uploads", document.FileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        document.CopyTo(stream);
-                    }
-
-                    ViewBag.Message = "File uploaded successfully.";
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Message = $"Error uploading document: {ex.Message}";
-                }
-            }
-            else
+            if (document == null || document.Length == 0)
             {
                 ViewBag.Message = "Please select a valid file.";
+                return View("UploadDocument");
             }
 
-            // Return the UploadDocument view to display the message
+            if (document.Length > 2 * 1024 * 1024)
+            {
+                ViewBag.Message = "Error: File size exceeds 2MB.";
+                return View("UploadDocument");
+            }
+
+            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+            var fileExtension = Path.GetExtension(document.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                ViewBag.Message = "Error: Invalid file type. Only PDF, DOCX, and XLSX are allowed.";
+                return View("UploadDocument");
+            }
+
+            var filePath = Path.Combine("wwwroot/uploads", document.FileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                document.CopyTo(stream);
+            }
+
+            ViewBag.Message = "File uploaded successfully.";
             return View("UploadDocument");
         }
+
 
 
 
