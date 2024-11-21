@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ST10348753_PROG6212POE.Models;
 using System.Diagnostics;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace ST10348753_PROG6212POE.Controllers
 {
@@ -8,8 +11,13 @@ namespace ST10348753_PROG6212POE.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        // Simulated in-memory database for claims
+        // Simulated in-memory databases for claims and lecturers
         private static List<Claim> claims = new List<Claim>();
+        private static List<Lecturer> lecturers = new List<Lecturer>
+        {
+            new Lecturer { LecturerId = 1, Name = "John Doe", ContactInfo = "john.doe@example.com", HourlyRate = 500 },
+            new Lecturer { LecturerId = 2, Name = "Jane Smith", ContactInfo = "jane.smith@example.com", HourlyRate = 450 }
+        };
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -150,17 +158,69 @@ namespace ST10348753_PROG6212POE.Controllers
         }
 
         /// <summary>
+        /// Displays the HR Dashboard with approved claims and lecturer data.
+        /// </summary>
+        [HttpGet]
+        public IActionResult HRDashboard()
+        {
+            ViewBag.ApprovedClaims = claims.Where(c => c.Status == "Approved").ToList();
+            ViewBag.Lecturers = lecturers;
+            return View();
+        }
+
+        /// <summary>
+        /// Updates lecturer details based on user input.
+        /// </summary>
+        [HttpPost]
+        public IActionResult UpdateLecturer(int lecturerId, string name, string contactInfo, decimal hourlyRate)
+        {
+            var lecturer = lecturers.FirstOrDefault(l => l.LecturerId == lecturerId);
+            if (lecturer != null)
+            {
+                lecturer.Name = name;
+                lecturer.ContactInfo = contactInfo;
+                lecturer.HourlyRate = hourlyRate;
+            }
+            return RedirectToAction("HRDashboard");
+        }
+
+        /// <summary>
+        /// Generates a PDF report of all approved claims.
+        /// </summary>
+        [HttpPost]
+        public IActionResult GenerateReport()
+        {
+            var approvedClaims = claims.Where(c => c.Status == "Approved").ToList();
+            var reportPath = Path.Combine("wwwroot/reports", "ApprovedClaimsReport.pdf");
+
+            Directory.CreateDirectory(Path.GetDirectoryName(reportPath) ?? string.Empty);
+
+            using (var writer = new PdfWriter(reportPath))
+            {
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+                document.Add(new Paragraph("Approved Claims Report"));
+                document.Add(new Paragraph("Generated on: " + DateTime.Now));
+
+                foreach (var claim in approvedClaims)
+                {
+                    document.Add(new Paragraph($"Claim ID: {claim.ClaimId}, Lecturer: {claim.LecturerName}, Total: {claim.TotalAmount:C}"));
+                }
+                document.Close();
+            }
+
+            return File("/reports/ApprovedClaimsReport.pdf", "application/pdf", "ApprovedClaimsReport.pdf");
+        }
+
+        /// <summary>
         /// Displays the status of a specific claim.
         /// </summary>
-        /// <param name="claimId">ID of the claim to check the status.</param>
-        /// <returns>The ClaimStatus view.</returns>
         public IActionResult ClaimStatus(int claimId)
         {
             var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
 
             if (claim != null)
             {
-                // Pass claim details to the view via ViewBag
                 ViewBag.ClaimId = claim.ClaimId;
                 ViewBag.Lecturer = claim.LecturerName;
                 ViewBag.Status = claim.Status;

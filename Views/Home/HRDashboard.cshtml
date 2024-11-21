@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "HR Dashboard";
+}
+
+<h2>HR Dashboard</h2>
+
+<!-- Display Approved Claims -->
+<h3>Approved Claims</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Claim ID</th>
+            <th>Lecturer Name</th>
+            <th>Total Amount</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in ViewBag.ApprovedClaims)
+        {
+            <tr>
+                <td>@claim.ClaimId</td>
+                <td>@claim.LecturerName</td>
+                <td>@claim.TotalAmount:C</td>
+                <td>@claim.Notes</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Manage Lecturer Details -->
+<h3>Lecturer Details</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Lecturer ID</th>
+            <th>Name</th>
+            <th>Contact Info</th>
+            <th>Hourly Rate</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var lecturer in ViewBag.Lecturers)
+        {
+            <tr>
+                <td>@lecturer.LecturerId</td>
+                <td>@lecturer.Name</td>
+                <td>@lecturer.ContactInfo</td>
+                <td>@lecturer.HourlyRate:C</td>
+                <td>
+                    <form method="post" asp-action="UpdateLecturer">
+                        <input type="hidden" name="lecturerId" value="@lecturer.LecturerId" />
+                        <input type="text" name="name" value="@lecturer.Name" placeholder="Update Name" />
+                        <input type="text" name="contactInfo" value="@lecturer.ContactInfo" placeholder="Update Contact" />
+                        <input type="number" name="hourlyRate" value="@lecturer.HourlyRate" step="0.01" />
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Generate Reports -->
+<h3>Generate Reports</h3>
+<form method="post" asp-action="GenerateReport">
+    <button type="submit" class="btn btn-success">Download Approved Claims Report</button>
+</form>
