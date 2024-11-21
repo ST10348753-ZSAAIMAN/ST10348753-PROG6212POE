@@ -134,63 +134,55 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
-        // Handle the file upload process
         [HttpPost]
-        public IActionResult UploadDocumentPost(IFormFile uploadedFile)
+        public IActionResult UploadDocumentPost(IFormFile document)
         {
-            // Check if a file is uploaded
-            if (uploadedFile == null || uploadedFile.Length == 0)
+            if (document != null && document.Length > 0)
             {
-                // Display an error message if no file is selected or the file is empty
-                ViewBag.Message = "Please select a valid file.";
-                return View();
-            }
-
-            // Validate the file size (maximum allowed is 2 MB)
-            if (uploadedFile.Length > 2 * 1024 * 1024)
-            {
-                // Display an error message if the file size exceeds the limit
-                ViewBag.Message = "Error: File size exceeds 2 MB.";
-                return View();
-            }
-
-            // Validate the file type (allow only .pdf, .docx, and .xlsx files)
-            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
-            var fileExtension = Path.GetExtension(uploadedFile.FileName).ToLower();
-
-            if (!allowedExtensions.Contains(fileExtension))
-            {
-                // Display an error message if the file type is not allowed
-                ViewBag.Message = "Error: Invalid file type. Only PDF, DOCX, and XLSX files are allowed.";
-                return View();
-            }
-
-            try
-            {
-                // Define the path where the file will be saved
-                var filePath = Path.Combine("wwwroot/uploads", uploadedFile.FileName);
-
-                // Ensure the uploads folder exists
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                // Save the file to the server
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    uploadedFile.CopyTo(stream);
+                    // Restrict file size to 2MB
+                    if (document.Length > 2 * 1024 * 1024)
+                    {
+                        ViewBag.Message = "File size exceeds 2 MB.";
+                        return View("UploadDocument");
+                    }
+
+                    // Restrict file types to PDF, DOCX, and XLSX
+                    var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+                    var fileExtension = Path.GetExtension(document.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        ViewBag.Message = "Invalid file type. Only PDF, DOCX, and XLSX are allowed.";
+                        return View("UploadDocument");
+                    }
+
+                    // Save the file
+                    var filePath = Path.Combine("wwwroot/uploads", document.FileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        document.CopyTo(stream);
+                    }
+
+                    ViewBag.Message = "File uploaded successfully.";
                 }
-
-                // Display a success message once the file is uploaded
-                ViewBag.Message = $"File '{uploadedFile.FileName}' uploaded successfully.";
+                catch (Exception ex)
+                {
+                    ViewBag.Message = $"Error uploading document: {ex.Message}";
+                }
             }
-            catch (Exception ex)
+            else
             {
-                // Handle any exceptions during the file upload process
-                ViewBag.Message = $"An error occurred while uploading the file: {ex.Message}";
+                ViewBag.Message = "Please select a valid file.";
             }
 
-            // Return the UploadDocument view to display the result
-            return View();
+            // Return the UploadDocument view to display the message
+            return View("UploadDocument");
         }
+
 
 
         // Display the Claim Status
