@@ -15,12 +15,16 @@
 using Microsoft.AspNetCore.Mvc;
 using ST10348753_PROG6212POE.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace ST10348753_PROG6212POE.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+
+        // Add this static list for simulating a database
+        private static List<dynamic> claims = new List<dynamic>(); // Simulating a database
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -44,22 +48,22 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
-        // Handle the form submission for Submit Claim with file upload
+        // Handle claim submission along with a file upload
         [HttpPost]
         public IActionResult SubmitClaim(decimal hoursWorked, decimal hourlyRate, string notes, IFormFile document)
         {
-            // Validate the uploaded file
-            if (document != null)
+            if (document != null && document.Length > 0)
             {
-                if (document.Length > 2 * 1024 * 1024) // Restrict file size to 2MB
+                // Validate file size and type
+                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+                var fileExtension = Path.GetExtension(document.FileName).ToLower();
+
+                if (document.Length > 2 * 1024 * 1024)
                 {
                     ViewBag.Message = "Error: File size exceeds 2MB.";
                     ViewBag.IsError = true;
                     return View();
                 }
-
-                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
-                var fileExtension = Path.GetExtension(document.FileName).ToLower();
 
                 if (!allowedExtensions.Contains(fileExtension))
                 {
@@ -68,36 +72,38 @@ namespace ST10348753_PROG6212POE.Controllers
                     return View();
                 }
 
-                try
+                // Save file
+                var filePath = Path.Combine("wwwroot/uploads", document.FileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    // Save the file
-                    var filePath = Path.Combine("wwwroot/uploads", document.FileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        document.CopyTo(stream);
-                    }
-
-                    ViewBag.FileMessage = $"Document {document.FileName} uploaded successfully.";
+                    document.CopyTo(stream);
                 }
-                catch (Exception ex)
-                {
-                    ViewBag.Message = $"Error uploading document: {ex.Message}";
-                    ViewBag.IsError = true;
-                    return View();
-                }
+
+                ViewBag.FileMessage = $"Document {document.FileName} uploaded successfully.";
             }
 
-            // Calculate the total amount
-            decimal totalAmount = hoursWorked * hourlyRate;
+            // Save claim details in the in-memory list
+            var totalAmount = hoursWorked * hourlyRate;
+            claims.Add(new
+            {
+                ClaimId = claims.Count + 1,
+                LecturerName = "John Doe", // Example name; integrate authentication later
+                HoursWorked = hoursWorked,
+                HourlyRate = hourlyRate,
+                TotalAmount = totalAmount,
+                Notes = notes,
+                DocumentPath = document != null ? $"/uploads/{document.FileName}" : null,
+                Status = "Pending"
+            });
 
-            // Simulate saving the claim details
-            ViewBag.Message = $"Claim submitted for {hoursWorked} hours at {hourlyRate:C} per hour. Total: {totalAmount:C}. Notes: {notes}";
+            ViewBag.Message = "Claim submitted successfully.";
             ViewBag.IsError = false;
 
             return View();
         }
+
+
 
         // This is the HomePage action, which will render the custom home page
         public IActionResult HomePage()
@@ -108,24 +114,37 @@ namespace ST10348753_PROG6212POE.Controllers
         // Display the Approve Claim form
         public IActionResult ApproveClaim()
         {
-            // This displays the form where Programme Coordinators approve claims
-            return View();
+            ViewBag.Claims = claims;
+            return View("SubmittedClaims");
         }
 
-        // Handle the approval or rejection of claims
+        // Handle the approval or rejection of a claim
         [HttpPost]
         public IActionResult ApproveClaim(int claimId, string action)
         {
-            // Simulate updating the claim status based on the action provided (Approve or Reject)
-            string status = action == "Approve" ? "Approved" : "Rejected";
+            // Find the claim in the in-memory storage using Claim ID
+            var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
 
-            // For demonstration purposes, we can display a message indicating the claim status
-            // In the future, you would implement this with actual database updates
-            ViewBag.Message = $"Claim {claimId} has been {status}.";
+            // Check if the claim exists
+            if (claim != null)
+            {
+                // Update the claim status based on the action (Approve or Reject)
+                claim.Status = action == "Approve" ? "Approved" : "Rejected";
 
-            // Return the ApproveClaim view to show the result
-            return View();
+                // Display a success message indicating the updated status
+                ViewBag.Message = $"Claim {claimId} has been {claim.Status}.";
+            }
+            else
+            {
+                // Display an error message if the claim is not found
+                ViewBag.Message = "Claim not found.";
+            }
+
+            // Pass the updated claims list to the view
+            ViewBag.Claims = claims;
+            return View("ViewSubmittedClaims"); // Redirect to the claims list view
         }
+
 
         // Display the Document Upload form
         public IActionResult UploadDocument()
@@ -185,39 +204,38 @@ namespace ST10348753_PROG6212POE.Controllers
 
 
 
-        // Display the Claim Status
+        // Display the status of a specific claim
         public IActionResult ClaimStatus(int claimId)
         {
-            // Simulate retrieving the status of a claim based on the claimId
-            // This is hardcoded for now, but in a real application, you would retrieve this data from a database
-            string lecturerName = "John Doe";
-            string status = "Pending";
+            // Retrieve the claim details based on the provided Claim ID
+            var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
 
-            // Set the details to ViewBag properties to be used in the view
-            ViewBag.ClaimId = claimId;
-            ViewBag.Lecturer = lecturerName;
-            ViewBag.Status = status;
+            // Check if the claim exists
+            if (claim != null)
+            {
+                // Pass the claim details to the view using ViewBag
+                ViewBag.ClaimId = claim.ClaimId;
+                ViewBag.Lecturer = claim.LecturerName;
+                ViewBag.Status = claim.Status;
+            }
+            else
+            {
+                // Display an error message if the claim is not found
+                ViewBag.Message = "Claim not found.";
+            }
 
-            // Return the ClaimStatus view with the simulated data
-            return View();
+            return View(); // Render the Claim Status view
         }
 
-        // Display a list of submitted claims
+
+        // Display a list of all submitted claims
         public IActionResult ViewSubmittedClaims()
         {
-            // Simulate a list of claims (Replace with database retrieval in the future)
-            var claims = new List<dynamic>
-    {
-        new { ClaimId = 1, LecturerName = "John Doe", HoursWorked = 10, HourlyRate = 200m, TotalAmount = 2000m, Notes = "First claim", DocumentPath = "/uploads/document1.pdf", Status = "Pending" },
-        new { ClaimId = 2, LecturerName = "Jane Smith", HoursWorked = 15, HourlyRate = 250m, TotalAmount = 3750m, Notes = "Second claim", DocumentPath = "/uploads/document2.docx", Status = "Approved" }
-    };
-
-            // Pass the claims to the view using ViewBag
+            // Pass the in-memory claims list to the view using ViewBag
             ViewBag.Claims = claims;
-
-            // Render the SubmittedClaims view
             return View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
