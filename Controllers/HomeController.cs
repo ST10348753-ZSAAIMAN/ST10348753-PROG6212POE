@@ -138,38 +138,57 @@ namespace ST10348753_PROG6212POE.Controllers
         [HttpPost]
         public IActionResult UploadDocumentPost(IFormFile uploadedFile)
         {
-            if (uploadedFile != null && uploadedFile.Length > 0)
+            // Check if a file is uploaded
+            if (uploadedFile == null || uploadedFile.Length == 0)
             {
-                try
-                {
-                    // Define the path where the file will be saved
-                    var filePath = Path.Combine("wwwroot/uploads", uploadedFile.FileName);
-
-                    // Ensure the uploads folder exists
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                    // Save the file to the server
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        uploadedFile.CopyTo(stream);
-                    }
-
-                    // Set a success message to indicate the upload was successful
-                    ViewBag.Message = "Document uploaded successfully.";
-                }
-                catch (Exception ex)
-                {
-                    // Handle any errors that occur during the file upload
-                    ViewBag.Message = $"An error occurred while uploading the document: {ex.Message}";
-                }
-            }
-            else
-            {
-                // Set an error message if no file was selected or the file is empty
+                // Display an error message if no file is selected or the file is empty
                 ViewBag.Message = "Please select a valid file.";
+                return View();
             }
 
-            // Return the UploadDocument view to display the success or error message
+            // Validate the file size (maximum allowed is 2 MB)
+            if (uploadedFile.Length > 2 * 1024 * 1024)
+            {
+                // Display an error message if the file size exceeds the limit
+                ViewBag.Message = "Error: File size exceeds 2 MB.";
+                return View();
+            }
+
+            // Validate the file type (allow only .pdf, .docx, and .xlsx files)
+            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+            var fileExtension = Path.GetExtension(uploadedFile.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                // Display an error message if the file type is not allowed
+                ViewBag.Message = "Error: Invalid file type. Only PDF, DOCX, and XLSX files are allowed.";
+                return View();
+            }
+
+            try
+            {
+                // Define the path where the file will be saved
+                var filePath = Path.Combine("wwwroot/uploads", uploadedFile.FileName);
+
+                // Ensure the uploads folder exists
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                // Save the file to the server
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    uploadedFile.CopyTo(stream);
+                }
+
+                // Display a success message once the file is uploaded
+                ViewBag.Message = $"File '{uploadedFile.FileName}' uploaded successfully.";
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions during the file upload process
+                ViewBag.Message = $"An error occurred while uploading the file: {ex.Message}";
+            }
+
+            // Return the UploadDocument view to display the result
             return View();
         }
 
