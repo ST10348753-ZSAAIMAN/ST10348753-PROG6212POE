@@ -191,6 +191,22 @@ namespace ST10348753_PROG6212POE.Controllers
             return View();
         }
 
+        // Display a list of submitted claims
+        public IActionResult ViewSubmittedClaims()
+        {
+            // Simulate a list of claims (Replace with database retrieval in the future)
+            var claims = new List<dynamic>
+    {
+        new { ClaimId = 1, LecturerName = "John Doe", HoursWorked = 10, HourlyRate = 200m, TotalAmount = 2000m, Notes = "First claim", DocumentPath = "/uploads/document1.pdf", Status = "Pending" },
+        new { ClaimId = 2, LecturerName = "Jane Smith", HoursWorked = 15, HourlyRate = 250m, TotalAmount = 3750m, Notes = "Second claim", DocumentPath = "/uploads/document2.docx", Status = "Approved" }
+    };
+
+            // Pass the claims to the view using ViewBag
+            ViewBag.Claims = claims;
+
+            // Render the SubmittedClaims view
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
