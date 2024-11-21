@@ -12,24 +12,8 @@
 // https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/dotnet/standard/class-libraries
 // https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/
-// https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/signalr/real-time-web-apps?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/dependency-injection?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test
-// https://learn.microsoft.com/en-us/dotnet/core/testing/testing-with-moq
-// https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection
-// https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-overview
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/introduction?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-6.0
-// https://learn.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-6.0
-
-
-
 
 namespace ST10348753_PROG6212POE
 {
@@ -37,37 +21,49 @@ namespace ST10348753_PROG6212POE
     {
         public static void Main(string[] args)
         {
+            // Initialize the builder for configuring services and middleware
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
-            builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
+            // Add services to the application
+            builder.Services.AddControllersWithViews(); // Enables MVC pattern support (Controllers and Views)
 
+            // Configure logging
+            builder.Logging.ClearProviders(); // Removes default logging providers
+            builder.Logging.AddConsole(); // Adds console logging for easier debugging
 
+            // Build the WebApplication instance
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
+                // Exception handling for production
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+
+                // Enforce HTTPS with HSTS (HTTP Strict Transport Security)
+                app.UseHsts(); // Default value is 30 days; modify if needed
             }
 
+            // Middleware to redirect HTTP requests to HTTPS
             app.UseHttpsRedirection();
+
+            // Enable serving of static files (e.g., CSS, JS, images) from the "wwwroot" folder
             app.UseStaticFiles();
 
+            // Add routing to the middleware pipeline
             app.UseRouting();
 
+            // Add authorization middleware
+            // (Authorization is currently not implemented but can be added in the future)
             app.UseAuthorization();
 
+            // Configure the default routing for the application
             app.MapControllerRoute(
-             name: "default",
-             pattern: "{controller=Home}/{action=HomePage}/{id?}");
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            // Start the application
             app.Run();
         }
     }
 }
-//------------------------------------------...ooo000 END OF FILE 000ooo...------------------------------------------------------//

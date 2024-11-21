@@ -1,8 +1,23 @@
 ﻿@{
+    // Set the title of the page for display in the browser tab and layout
     ViewData["Title"] = "Home Page";
 }
 
+<!-- Center-aligned container for the homepage content -->
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <!-- Main heading for the home page -->
+    <h1 class="display-4">Welcome to the Contract Monthly Claim System</h1>
+
+    <!-- Informational paragraph -->
+    <p>
+        Use this system to manage your monthly claim submissions, approvals, and status checks.
+    </p>
+
+    <!-- Links to navigate the application -->
+    <div class="mt-4">
+        <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="SubmitClaim">Submit a Claim</a>
+        <a class="btn btn-success btn-lg" asp-controller="Home" asp-action="ApproveClaim">Approve Claims</a>
+        <a class="btn btn-info btn-lg" asp-controller="Home" asp-action="ViewSubmittedClaims">View Submitted Claims</a>
+        <a class="btn btn-warning btn-lg" asp-controller="Home" asp-action="ClaimStatus">Check Claim Status</a>
+    </div>
 </div>

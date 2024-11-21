@@ -1,48 +1,65 @@
 ﻿@{
+    // Setting the title of the page for display in the browser tab
     ViewData["Title"] = "Claim Status";
 }
 
 <h2>Claim Status</h2>
 
-<!-- Display the dynamic claim details -->
-<p><strong>Claim ID:</strong> @ViewBag.ClaimId</p>
-<p><strong>Lecturer:</strong> @ViewBag.Lecturer</p>
-<p><strong>Status:</strong> @ViewBag.Status</p>
-
+<!-- Display the dynamic claim details using ViewBag values -->
+<p><strong>Claim ID:</strong> @ViewBag.ClaimId</p> <!-- Displays the Claim ID -->
+<p><strong>Lecturer:</strong> @ViewBag.Lecturer</p> <!-- Displays the name of the lecturer -->
+<p><strong>Status:</strong> @ViewBag.Status</p> <!-- Displays the current status of the claim -->
 <!-- Progress bar to visualize the claim status -->
 <div style="width: 100%; background-color: #f3f3f3; border-radius: 5px; margin-top: 10px;">
-    <div style="width: @GetProgressWidth(ViewBag.Status); height: 30px; background-color: @GetProgressColor(ViewBag.Status); text-align: center; color: white; border-radius: 5px;">
+    <!-- Inner div to represent the progress bar -->
+    <div style="width: @GetProgressWidth(ViewBag.Status);
+                height: 30px;
+                background-color: @GetProgressColor(ViewBag.Status);
+                text-align: center;
+                color: white;
+                border-radius: 5px;">
+        <!-- Display the status text inside the progress bar -->
         @ViewBag.Status
     </div>
 </div>
 
-<!-- Helper functions to determine the progress width and color based on status -->
+<!-- Helper functions to calculate progress bar width and color dynamically -->
 @functions {
+    /// <summary>
+    /// Determines the width of the progress bar based on the claim status.
+    /// </summary>
+    /// <param name="status">The current status of the claim.</param>
+    /// <returns>The width as a percentage string.</returns>
     public string GetProgressWidth(string status)
     {
         return status switch
         {
-            "Pending" => "33%",
-            "Approved" => "100%",
-            "Rejected" => "100%",
-            _ => "0%"
+            "Pending" => "33%",   // 33% width for Pending status
+            "Approved" => "100%", // 100% width for Approved status
+            "Rejected" => "100%", // 100% width for Rejected status
+            _ => "0%"             // Default to 0% for unknown status
         };
     }
 
+    /// <summary>
+    /// Determines the color of the progress bar based on the claim status.
+    /// </summary>
+    /// <param name="status">The current status of the claim.</param>
+    /// <returns>The color for the progress bar as a string.</returns>
     public string GetProgressColor(string status)
     {
         return status switch
         {
-            "Pending" => "orange",
-            "Approved" => "green",
-            "Rejected" => "red",
-            _ => "gray"
+            "Pending" => "orange", // Orange for Pending status
+            "Approved" => "green", // Green for Approved status
+            "Rejected" => "red",   // Red for Rejected status
+            _ => "gray"            // Default to gray for unknown status
         };
     }
 }
 
-<!-- Display a message if provided -->
+<!-- Display a success or error message, if any -->
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <p style="color: green;">@ViewBag.Message</p>
+    <p style="color: green;">@ViewBag.Message</p> <!-- Displays a message in green if not empty -->
 }

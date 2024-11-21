@@ -41,7 +41,7 @@
                         @if (!string.IsNullOrEmpty(claim.DocumentPath))
                         {
                             <!-- Link to view the uploaded document -->
-                            <a href="@claim.DocumentPath" target="_blank">View Document</a>
+                            <a href="@claim.DocumentPath" target="_blank" title="View the uploaded document">View Document</a>
                         }
                         else
                         {
@@ -56,9 +56,9 @@
                             <!-- Hidden input to pass the Claim ID -->
                             <input type="hidden" name="claimId" value="@claim.ClaimId" />
                             <!-- Button to approve the claim -->
-                            <button type="submit" name="action" value="Approve" class="btn btn-success btn-sm">Approve</button>
+                            <button type="submit" name="action" value="Approve" class="btn btn-success btn-sm" title="Approve this claim">Approve</button>
                             <!-- Button to reject the claim -->
-                            <button type="submit" name="action" value="Reject" class="btn btn-danger btn-sm">Reject</button>
+                            <button type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" title="Reject this claim">Reject</button>
                         </form>
                     </td>
                 </tr>

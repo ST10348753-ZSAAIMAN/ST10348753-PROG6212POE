@@ -1,13 +1,45 @@
 ﻿@{
+    // Set the title for the page, displayed in the browser tab and shared layout
     ViewData["Title"] = "Home Page";
 }
 
+<!-- Heading for the main page -->
 <h2>Welcome to the Contract Monthly Claim System</h2>
 
+<!-- Unordered list containing navigation links -->
 <ul>
-    <li><a asp-controller="Home" asp-action="SubmitClaim">Submit a Claim</a></li>
-    <li><a asp-controller="Home" asp-action="ApproveClaim">Approve Claims</a></li>
-    <li><a asp-controller="Home" asp-action="UploadDocument">Upload Documents</a></li>
-    <li><a asp-controller="Home" asp-action="ViewSubmittedClaims">View Submitted Claims</a></li>
-    <li><a asp-controller="Home" asp-action="ClaimStatus">Check Claim Status</a></li>
+    <!-- Link to navigate to the SubmitClaim page -->
+    <li>
+        <a asp-controller="Home" asp-action="SubmitClaim">
+            Submit a Claim
+        </a>
+    </li>
+
+    <!-- Link to navigate to the ApproveClaim page -->
+    <li>
+        <a asp-controller="Home" asp-action="ApproveClaim">
+            Approve Claims
+        </a>
+    </li>
+
+    <!-- Link to navigate to the UploadDocument page -->
+    <li>
+        <a asp-controller="Home" asp-action="UploadDocument">
+            Upload Documents
+        </a>
+    </li>
+
+    <!-- Link to navigate to the ViewSubmittedClaims page -->
+    <li>
+        <a asp-controller="Home" asp-action="ViewSubmittedClaims">
+            View Submitted Claims
+        </a>
+    </li>
+
+    <!-- Link to navigate to the ClaimStatus page -->
+    <li>
+        <a asp-controller="Home" asp-action="ClaimStatus">
+            Check Claim Status
+        </a>
+    </li>
 </ul>

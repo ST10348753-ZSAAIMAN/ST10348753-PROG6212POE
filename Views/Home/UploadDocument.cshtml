@@ -1,19 +1,61 @@
 ﻿@{
-    ViewData["Title"] = "Upload Document";
+    // Set the title for the page
+    ViewData["Title"] = "Upload Supporting Document";
 }
 
 <h2>Upload Supporting Document</h2>
 
 <!-- Form for uploading a document -->
 <form method="post" enctype="multipart/form-data" asp-action="UploadDocumentPost">
+    <!-- Label for the file input -->
     <label for="uploadedFile">Select a file to upload:</label>
-    <input type="file" id="uploadedFile" name="uploadedFile" accept=".pdf,.docx,.xlsx" required />
+    <!-- Input for file selection, with restrictions for accepted file types -->
+    <input type="file" id="uploadedFile" name="document" accept=".pdf,.docx,.xlsx" required />
+    <small style="color: gray;">Allowed file types: PDF, DOCX, XLSX. Max size: 2MB.</small> <!-- Help text for users -->
     <br /><br />
-    <button type="submit">Upload Document</button>
+    <!-- Submit button for uploading the document -->
+    <button type="submit" class="btn btn-success">Upload Document</button>
 </form>
 
 <!-- Display a success or error message if available -->
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <p style="color: green;">@ViewBag.Message</p>
+    <p style="color: @(ViewBag.IsError ? "red" : "green");">
+        @ViewBag.Message
+    </p> <!-- Display the message with appropriate color -->
 }
+
+<script>
+    // Client-side validation for file upload
+    document.querySelector("form").addEventListener("submit", function (e) {
+        let valid = true;
+        const fileInput = document.getElementById("uploadedFile");
+
+        // Check if a file is selected
+        if (fileInput.files.length === 0) {
+            alert("Please select a file to upload.");
+            valid = false;
+        } else {
+            // Validate file size (2MB max)
+            const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+            if (fileInput.files[0].size > maxSize) {
+                alert("File size exceeds 2MB.");
+                valid = false;
+            }
+
+            // Validate file type
+            const allowedExtensions = [".pdf", ".docx", ".xlsx"];
+            const fileName = fileInput.value.toLowerCase();
+            const validExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            if (!validExtension) {
+                alert("Invalid file type. Only PDF, DOCX, and XLSX files are allowed.");
+                valid = false;
+            }
+        }
+
+        // Prevent form submission if validation fails
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+</script>

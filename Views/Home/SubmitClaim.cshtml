@@ -9,32 +9,79 @@
 <form method="post" asp-action="SubmitClaim" enctype="multipart/form-data">
     <!-- Input field for hours worked -->
     <label for="hoursWorked">Hours Worked:</label>
-    <input type="number" id="hoursWorked" name="hoursWorked" placeholder="Enter hours worked" required />
+    <input type="number" id="hoursWorked" name="hoursWorked" placeholder="Enter hours worked" min="1" required />
+    <small style="color: red;" id="hoursWorkedError"></small>
     <br />
 
     <!-- Input field for the hourly rate -->
     <label for="hourlyRate">Hourly Rate:</label>
-    <input type="number" id="hourlyRate" name="hourlyRate" placeholder="Enter hourly rate" required />
+    <input type="number" id="hourlyRate" name="hourlyRate" placeholder="Enter hourly rate" min="0.01" step="0.01" required />
+    <small style="color: red;" id="hourlyRateError"></small>
     <br />
 
     <!-- Text area for additional notes -->
     <label for="notes">Additional Notes:</label>
-    <textarea id="notes" name="notes" placeholder="Enter notes"></textarea>
+    <textarea id="notes" name="notes" placeholder="Enter notes (optional)"></textarea>
     <br />
 
     <!-- File input for uploading supporting documents -->
     <label for="document">Upload Supporting Document:</label>
     <input type="file" id="document" name="document" accept=".pdf,.docx,.xlsx" />
+    <small style="color: red;" id="documentError"></small>
     <br />
 
     <!-- Submit button to submit the claim -->
     <button type="submit">Submit Claim</button>
 </form>
 
-<!-- Display a success or error message if ViewBag.Message is set -->
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
+    <!-- Display the message -->
     <p style="color: @(ViewBag.IsError ? "red" : "green");">
         @ViewBag.Message
     </p>
 }
+
+<script>
+    // Client-side validation script
+    document.querySelector("form").addEventListener("submit", function (e) {
+        let valid = true;
+
+        // Validate hours worked
+        const hoursWorked = document.getElementById("hoursWorked");
+        if (hoursWorked.value <= 0) {
+            document.getElementById("hoursWorkedError").innerText = "Please enter a valid number of hours.";
+            valid = false;
+        } else {
+            document.getElementById("hoursWorkedError").innerText = "";
+        }
+
+        // Validate hourly rate
+        const hourlyRate = document.getElementById("hourlyRate");
+        if (hourlyRate.value <= 0) {
+            document.getElementById("hourlyRateError").innerText = "Please enter a valid hourly rate.";
+            valid = false;
+        } else {
+            document.getElementById("hourlyRateError").innerText = "";
+        }
+
+        // Validate document upload
+        const documentInput = document.getElementById("document");
+        if (documentInput.files.length > 0) {
+            const allowedExtensions = [".pdf", ".docx", ".xlsx"];
+            const fileName = documentInput.value.toLowerCase();
+            const validExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            if (!validExtension) {
+                document.getElementById("documentError").innerText = "Only PDF, DOCX, and XLSX files are allowed.";
+                valid = false;
+            } else {
+                document.getElementById("documentError").innerText = "";
+            }
+        }
+
+        // Prevent form submission if validation fails
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+</script>
