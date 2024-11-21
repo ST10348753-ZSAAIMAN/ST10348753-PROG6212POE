@@ -1,1 +1,13 @@
-﻿c
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Welcome to the Contract Monthly Claim System</h2>
+
+<ul>
+    <li><a asp-controller="Home" asp-action="SubmitClaim">Submit a Claim</a></li>
+    <li><a asp-controller="Home" asp-action="ApproveClaim">Approve Claims</a></li>
+    <li><a asp-controller="Home" asp-action="UploadDocument">Upload Documents</a></li>
+    <li><a asp-controller="Home" asp-action="ViewSubmittedClaims">View Submitted Claims</a></li>
+    <li><a asp-controller="Home" asp-action="ClaimStatus">Check Claim Status</a></li>
+</ul>
