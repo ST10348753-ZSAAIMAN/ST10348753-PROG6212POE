@@ -118,6 +118,7 @@ namespace ST10348753_PROG6212POE.Controllers
             return View("SubmittedClaims");
         }
 
+
         // Handle the approval or rejection of a claim
         [HttpPost]
         public IActionResult ApproveClaim(int claimId, string action)
